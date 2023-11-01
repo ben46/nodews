@@ -1,11 +1,18 @@
 const http = require('http');
 const server = http.createServer();
 const io = require('socket.io')(server);
-const redis = require('socket.io-redis');
-const redisClient = require('ioredis')(); // Redis 客户端
+// 引入 redis 模块
+const redis = require('redis');
+
+// 创建 redisClient 对象
+const redisClient = redis.createClient({
+    host: 'localhost', // Redis 服务器的地址
+    port: 6379 // Redis 服务器的端口
+});
 
 // 配置 Redis 适配器
-io.adapter(redis({ host: 'localhost', port: 6379 }));
+const socketioRedis = require('socket.io-redis');
+io.adapter(socketioRedis({ host: 'localhost', port: 6379 }));
 
 // 第一个频道：转发广播所有消息
 io.on('connection', (socket) => {
