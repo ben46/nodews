@@ -24,33 +24,23 @@ io.on('connection', (socket) => {
     socket.on('special_message', (message) => {
         // 存储消息到 Redis（这里存储到名为 "special_messages" 的 Redis 列表）
         redisClient.lpush('special_messages', message, (err, reply) => {
-            if (err) {
-                console.error('保存特定消息到 Redis 失败：', err);
-            }
+            if (err) console.error('保存特定消息到 Redis 失败：', err);
         });
     });
 
     // 查询 Redis 中的特定消息
     socket.on('query_special_messages', () => {
         redisClient.lrange('special_messages', 0, -1, (err, messages) => {
-            if (err) {
-                console.error('查询特定消息失败：', err);
-            } else {
-                // 将消息发送给客户端
-                socket.emit('special_messages', messages);
-            }
+            if (err) console.error('查询特定消息失败：', err);
+            else socket.emit('special_messages', messages);     // 将消息发送给客户端
         });
     });
 
     // 消费 Redis 中的特定消息
     socket.on('consume_special_messages', () => {
         redisClient.lpop('special_messages', (err, message) => {
-            if (err) {
-                console.error('消费特定消息失败：', err);
-            } else if (message) {
-                // 发送消息给客户端
-                socket.emit('consumed_message', message);
-            }
+            if (err) console.error('消费特定消息失败：', err);
+            else if (message) socket.emit('consumed_message', message);// 发送消息给客户端
         });
     });
 });
