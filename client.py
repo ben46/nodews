@@ -56,7 +56,6 @@ if __name__ == '__main__':
 
         # 消费特定消息
         consume_special_messages()
-        consume_special_messages()
 
 # 断开连接
 sio.disconnect()
