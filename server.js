@@ -17,11 +17,13 @@ io.adapter(socketioRedis({ host: 'localhost', port: 6379 }));
 // 第一个频道：转发广播所有消息
 io.on('connection', (socket) => {
     socket.on('message', (message) => {
+        console.log(message);
         // 广播消息到所有连接的客户端
         io.emit('broadcast_message', message);
     });
 
     socket.on('special_message', (message) => {
+        console.log(message);
         // 存储消息到 Redis（这里存储到名为 "special_messages" 的 Redis 列表）
         redisClient.lpush('special_messages', message, (err, reply) => {
             if (err) console.error('保存特定消息到 Redis 失败：', err);
@@ -39,6 +41,7 @@ io.on('connection', (socket) => {
     // 消费 Redis 中的特定消息
     socket.on('consume_special_messages', () => {
         redisClient.lpop('special_messages', (err, message) => {
+            console.log(message);
             if (err) console.error('消费特定消息失败：', err);
             else if (message) socket.emit('consumed_message', message);// 发送消息给客户端
         });
